@@ -1,18 +1,14 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 
 @Component({
   selector: 'lib-map',
-  template: `
-    <p>
-      map works!
-    </p>
-  `,
-  styles: [
-  ]
+  templateUrl: 'map.component.html',
+  styleUrls: ['map.component.scss']
 })
 export class MapComponent implements OnInit {
 
-  constructor() { }
+  constructor() {
+  }
 
   ngOnInit(): void {
   }
