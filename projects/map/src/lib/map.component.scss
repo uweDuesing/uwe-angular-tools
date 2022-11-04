@@ -1,4 +1,6 @@
+@import "node_modules/ol/ol.css";
 #map {
-  border:1px dotted #ff00ff;
-  height: 100%
+  position: fixed;
+  width: 100%;
+  height:calc(100%);
 }
