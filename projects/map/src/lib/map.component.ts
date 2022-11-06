@@ -1,15 +1,15 @@
-import {AfterViewInit, Component, OnInit} from '@angular/core';
+import {AfterViewInit, Component, OnInit, ViewEncapsulation} from '@angular/core';
 import Map from 'ol/Map'
 import OSM from 'ol/source/OSM';
 import TileLayer from 'ol/layer/Tile';
 import View from 'ol/View';
 import {fromLonLat} from "ol/proj";
-import Extent from 'ol/interaction/Extent';
 
 @Component({
   selector: 'lib-map',
   templateUrl: 'map.component.html',
-  styleUrls: ['map.component.scss']
+  styleUrls: ['map.component.scss'],
+  encapsulation: ViewEncapsulation.None
 })
 export class MapComponent implements OnInit, AfterViewInit {
 
@@ -52,7 +52,7 @@ export class MapComponent implements OnInit, AfterViewInit {
         // @ts-ignore
         ctx.drawImage(image, 0, 0);
       }
-      image.crossOrigin = 'Anonymous';
+      image.crossOrigin = 'strict-origin-when-cross-origin';
       image.src = this.OSMSource.getTileUrlFunction()(tileCoord);
 
     })
