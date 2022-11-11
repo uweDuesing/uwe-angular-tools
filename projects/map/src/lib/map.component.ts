@@ -29,12 +29,9 @@ export class MapComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.OSMSource = new OSM();
-    console.log('start')
 
 
     window.addEventListener('offline', (e)=> {
-      console.log(this.map.getView().getZoom());
-      console.log('adding offline XXXX', this.map.getView().getZoom());
       if (this.map.getView().getZoom() > 10) {
 
         this.map.removeLayer(this.onlineLayer);
@@ -59,10 +56,8 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     this.map.on('moveend', () => {
       this.currentZoom =Math.round(this.map.getView().getZoom());
-      console.log(this.currentZoom);
 
     })
-    console.log('adding event handler');
 
   }
   private buildLayers = (): any[] => {
