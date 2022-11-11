@@ -36,32 +36,31 @@ export class MapComponent implements OnInit, AfterViewInit {
   }
 
 
-  public cacheTiles = () => {
-    const osmExtent = this.map.getView().calculateExtent();
-    console.log(osmExtent.projection);
-    const currentZoom = Math.round(this.map.getView().getZoom());
-    console.log(this.OSMSource.getTileGrid());
-    this.OSMSource.getTileGrid().forEachTileCoord(osmExtent, currentZoom, (tileCoord: number[]) => {
-      console.log(tileCoord, currentZoom)
-      const image = document.createElement('img');
-      image.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = this.OSMSource.getTileGrid().getTileSize(currentZoom)
-        canvas.height = this.OSMSource.getTileGrid().getTileSize(currentZoom);
+    public cacheTiles = () => {
+      const osmExtent = this.map.getView().calculateExtent();
+      const currentZoom = Math.round(this.map.getView().getZoom());
+      this.OSMSource.getTileGrid().forEachTileCoord(osmExtent, currentZoom, (tileCoord: number[]) => {
+        const image = document.createElement('img');
+        image.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = this.OSMSource.getTileGrid().getTileSize(currentZoom)
+          canvas.height = this.OSMSource.getTileGrid().getTileSize(currentZoom);
 
-        localStorage.setItem('OSM_' + tileCoord[0] + '_' + tileCoord['1'] + (-tileCoord[2] - 1), canvas.toDataURL());
-        image.remove();
-        canvas.remove();
-        const ctx = canvas.getContext('2d');
-        // @ts-ignore
-        ctx.drawImage(image, 0, 0);
-      }
-      image.crossOrigin = 'Anonymous';
-      console.log('x', tileCoord);
-      image.src = this.OSMSource.getTileUrlFunction()(tileCoord);
-    })
+          localStorage.setItem('OSM_' + tileCoord[0] + '_' + tileCoord['1'] + (-tileCoord[2] - 1), canvas.toDataURL());
+          image.remove();
+          canvas.remove();
+          const ctx = canvas.getContext('2d');
+          // @ts-ignore
+          ctx.drawImage(image, 0, 0);
+        }
+        image.crossOrigin = 'Anonymous';
+        console.log('x', tileCoord);
+        tileCoord[2] = tileCoord[2] - 1;
+        console.log('xx', tileCoord);
+        image.src = this.OSMSource.getTileUrlFunction()(tileCoord);
+      })
 
-  }
+    }
 
   public createMap = (): Map => {
     return new Map({
