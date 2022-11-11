@@ -30,19 +30,14 @@ export class MapComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.OSMSource = new OSM();
     console.log('start')
-  }
 
-  ngAfterViewInit() {
-    this.map = this.createMap();
-
-    this.map.on('moveend', () => {
-      this.currentZoom = this.map.getView().getZoom();
-
-    })
 
     window.addEventListener('offline', (e)=> {
       console.log(this.map.getView().getZoom());
-      if (this.map.getView().getZoom > 10) {
+      console.log('adding offline XXXX', this.map.getView().getZoom());
+      if (this.map.getView().getZoom() > 10) {
+
+        this.map.removeLayer(this.onlineLayer);
         this.addOfflineLayer();
       } else {
         this.removeOfflineLayer();
@@ -50,9 +45,25 @@ export class MapComponent implements OnInit, AfterViewInit {
 
     });
     window.addEventListener('online', (e)=> {
-      this.onlineLayer.setVisible(true);
+      this.map.addLayer(this.onlineLayer);
 
     });
+
+
+
+
+  }
+
+  ngAfterViewInit() {
+    this.map = this.createMap();
+
+    this.map.on('moveend', () => {
+      this.currentZoom =Math.round(this.map.getView().getZoom());
+      console.log(this.currentZoom);
+
+    })
+    console.log('adding event handler');
+
   }
   private buildLayers = (): any[] => {
 
@@ -86,33 +97,42 @@ export class MapComponent implements OnInit, AfterViewInit {
         const canvas = document.createElement('canvas');
         canvas.width = this.OSMSource.getTileGrid().getTileSize(currentZoom)
         canvas.height = this.OSMSource.getTileGrid().getTileSize(currentZoom);
-
-        localStorage.setItem('OSM_' + tileCoord[0] + '_' + tileCoord['1'] + (-tileCoord[2] - 1), canvas.toDataURL());
-        image.remove();
-        canvas.remove();
         const ctx = canvas.getContext('2d');
         // @ts-ignore
+        // @ts-ignore
         ctx.drawImage(image, 0, 0);
+        localStorage.setItem('OSM_' + tileCoord[0] + '_' + tileCoord[1] + '_' + (-tileCoord[2] - 1), canvas.toDataURL());
+        image.remove();
+        canvas.remove();
+
+        // @ts-ignore
+
       }
       image.crossOrigin = 'Anonymous';
       image.src = this.OSMSource.getTileUrlFunction()(tileCoord);
     })
   }
+
+
   addOfflineLayer = () => {
     this.offlineLayer = new TileLayer({
       source: new XYZ({
-        maxZoom: 18,
-        minZoom: 18,
+        maxZoom: this.currentZoom,
+        minZoom: this.currentZoom,
         // @ts-ignore
         tileUrlFunction: function (tileCoord) {
-          console.log('offline', tileCoord)
-          return localStorage.getItem('OSM_' + tileCoord[0] + '_' + tileCoord[1] + '_' + (-tileCoord[2] - 1));
+
+          const tile = localStorage.getItem('OSM_' + tileCoord[0] + '_' + tileCoord[1] + '_' + (-tileCoord[2] - 1));
+          return tile;
         }
       })
     });
     this.map.addLayer(this.offlineLayer);
   }
   removeOfflineLayer = () => {
+    this.map.removeLayer(this.offlineLayer);
+  }
+  removeOnlineLayer = () => {
     this.map.removeLayer(this.offlineLayer);
   }
 }
